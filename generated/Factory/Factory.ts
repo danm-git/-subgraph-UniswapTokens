@@ -88,64 +88,9 @@ export class PoolCreated__Params {
   }
 }
 
-export class Token__parametersResult {
-  value0: Address;
-  value1: Address;
-  value2: Address;
-  value3: i32;
-  value4: i32;
-
-  constructor(
-    value0: Address,
-    value1: Address,
-    value2: Address,
-    value3: i32,
-    value4: i32
-  ) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
-    this.value4 = value4;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromAddress(this.value0));
-    map.set("value1", ethereum.Value.fromAddress(this.value1));
-    map.set("value2", ethereum.Value.fromAddress(this.value2));
-    map.set(
-      "value3",
-      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(this.value3))
-    );
-    map.set("value4", ethereum.Value.fromI32(this.value4));
-    return map;
-  }
-
-  getFactory(): Address {
-    return this.value0;
-  }
-
-  getToken0(): Address {
-    return this.value1;
-  }
-
-  getToken1(): Address {
-    return this.value2;
-  }
-
-  getFee(): i32 {
-    return this.value3;
-  }
-
-  getTickSpacing(): i32 {
-    return this.value4;
-  }
-}
-
-export class Token extends ethereum.SmartContract {
-  static bind(address: Address): Token {
-    return new Token("Token", address);
+export class Factory extends ethereum.SmartContract {
+  static bind(address: Address): Factory {
+    return new Factory("Factory", address);
   }
 
   createPool(tokenA: Address, tokenB: Address, fee: i32): Address {
@@ -183,21 +128,21 @@ export class Token extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  feeAmountTickSpacing(param0: i32): i32 {
+  feeAmountTickSpacing(fee: i32): i32 {
     let result = super.call(
       "feeAmountTickSpacing",
       "feeAmountTickSpacing(uint24):(int24)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(fee))]
     );
 
     return result[0].toI32();
   }
 
-  try_feeAmountTickSpacing(param0: i32): ethereum.CallResult<i32> {
+  try_feeAmountTickSpacing(fee: i32): ethereum.CallResult<i32> {
     let result = super.tryCall(
       "feeAmountTickSpacing",
       "feeAmountTickSpacing(uint24):(int24)",
-      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param0))]
+      [ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(fee))]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -206,14 +151,14 @@ export class Token extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
-  getPool(param0: Address, param1: Address, param2: i32): Address {
+  getPool(tokenA: Address, tokenB: Address, fee: i32): Address {
     let result = super.call(
       "getPool",
       "getPool(address,address,uint24):(address)",
       [
-        ethereum.Value.fromAddress(param0),
-        ethereum.Value.fromAddress(param1),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param2))
+        ethereum.Value.fromAddress(tokenA),
+        ethereum.Value.fromAddress(tokenB),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(fee))
       ]
     );
 
@@ -221,17 +166,17 @@ export class Token extends ethereum.SmartContract {
   }
 
   try_getPool(
-    param0: Address,
-    param1: Address,
-    param2: i32
+    tokenA: Address,
+    tokenB: Address,
+    fee: i32
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "getPool",
       "getPool(address,address,uint24):(address)",
       [
-        ethereum.Value.fromAddress(param0),
-        ethereum.Value.fromAddress(param1),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(param2))
+        ethereum.Value.fromAddress(tokenA),
+        ethereum.Value.fromAddress(tokenB),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(fee))
       ]
     );
     if (result.reverted) {
@@ -254,69 +199,6 @@ export class Token extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  parameters(): Token__parametersResult {
-    let result = super.call(
-      "parameters",
-      "parameters():(address,address,address,uint24,int24)",
-      []
-    );
-
-    return new Token__parametersResult(
-      result[0].toAddress(),
-      result[1].toAddress(),
-      result[2].toAddress(),
-      result[3].toI32(),
-      result[4].toI32()
-    );
-  }
-
-  try_parameters(): ethereum.CallResult<Token__parametersResult> {
-    let result = super.tryCall(
-      "parameters",
-      "parameters():(address,address,address,uint24,int24)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Token__parametersResult(
-        value[0].toAddress(),
-        value[1].toAddress(),
-        value[2].toAddress(),
-        value[3].toI32(),
-        value[4].toI32()
-      )
-    );
-  }
-}
-
-export class ConstructorCall extends ethereum.Call {
-  get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
-  }
-
-  get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
-  }
-}
-
-export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
-export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
   }
 }
 
